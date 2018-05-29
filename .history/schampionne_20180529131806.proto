@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package schampionne;
+
+// The greeting service definition.
+service Broker {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// The response message containing the greetings
+message Event {
+  string key = 1;
+  string message = 2;
+}

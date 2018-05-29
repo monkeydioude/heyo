@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package schampionne;
+
+service Broker {
+  rpc Whisper (Rumor) returns (Response) {}
+  rpc Listen (Listener) returns (Rumor) {}
+}
+
+message Rumor {
+  string type = 1;
+  string message = 2;
+}
+
+message Listener {
+    string type = 1;
+}
+
+message Response {
+    string message = 1;
+}
