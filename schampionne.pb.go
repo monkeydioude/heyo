@@ -35,7 +35,7 @@ func (m *Rumor) Reset()         { *m = Rumor{} }
 func (m *Rumor) String() string { return proto.CompactTextString(m) }
 func (*Rumor) ProtoMessage()    {}
 func (*Rumor) Descriptor() ([]byte, []int) {
-	return fileDescriptor_schampionne_90caa4118106af1d, []int{0}
+	return fileDescriptor_schampionne_bb624370ceaa2246, []int{0}
 }
 func (m *Rumor) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Rumor.Unmarshal(m, b)
@@ -80,7 +80,7 @@ func (m *Listener) Reset()         { *m = Listener{} }
 func (m *Listener) String() string { return proto.CompactTextString(m) }
 func (*Listener) ProtoMessage()    {}
 func (*Listener) Descriptor() ([]byte, []int) {
-	return fileDescriptor_schampionne_90caa4118106af1d, []int{1}
+	return fileDescriptor_schampionne_bb624370ceaa2246, []int{1}
 }
 func (m *Listener) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Listener.Unmarshal(m, b)
@@ -107,38 +107,38 @@ func (m *Listener) GetType() string {
 	return ""
 }
 
-type Response struct {
+type Ack struct {
 	Message              string   `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Response) Reset()         { *m = Response{} }
-func (m *Response) String() string { return proto.CompactTextString(m) }
-func (*Response) ProtoMessage()    {}
-func (*Response) Descriptor() ([]byte, []int) {
-	return fileDescriptor_schampionne_90caa4118106af1d, []int{2}
+func (m *Ack) Reset()         { *m = Ack{} }
+func (m *Ack) String() string { return proto.CompactTextString(m) }
+func (*Ack) ProtoMessage()    {}
+func (*Ack) Descriptor() ([]byte, []int) {
+	return fileDescriptor_schampionne_bb624370ceaa2246, []int{2}
 }
-func (m *Response) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Response.Unmarshal(m, b)
+func (m *Ack) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Ack.Unmarshal(m, b)
 }
-func (m *Response) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Response.Marshal(b, m, deterministic)
+func (m *Ack) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Ack.Marshal(b, m, deterministic)
 }
-func (dst *Response) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Response.Merge(dst, src)
+func (dst *Ack) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Ack.Merge(dst, src)
 }
-func (m *Response) XXX_Size() int {
-	return xxx_messageInfo_Response.Size(m)
+func (m *Ack) XXX_Size() int {
+	return xxx_messageInfo_Ack.Size(m)
 }
-func (m *Response) XXX_DiscardUnknown() {
-	xxx_messageInfo_Response.DiscardUnknown(m)
+func (m *Ack) XXX_DiscardUnknown() {
+	xxx_messageInfo_Ack.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Response proto.InternalMessageInfo
+var xxx_messageInfo_Ack proto.InternalMessageInfo
 
-func (m *Response) GetMessage() string {
+func (m *Ack) GetMessage() string {
 	if m != nil {
 		return m.Message
 	}
@@ -148,7 +148,7 @@ func (m *Response) GetMessage() string {
 func init() {
 	proto.RegisterType((*Rumor)(nil), "grpc.Rumor")
 	proto.RegisterType((*Listener)(nil), "grpc.Listener")
-	proto.RegisterType((*Response)(nil), "grpc.Response")
+	proto.RegisterType((*Ack)(nil), "grpc.Ack")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -163,8 +163,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type BrokerClient interface {
-	Whisper(ctx context.Context, in *Rumor, opts ...grpc.CallOption) (*Response, error)
-	Listen(ctx context.Context, in *Listener, opts ...grpc.CallOption) (*Rumor, error)
+	Whisper(ctx context.Context, in *Rumor, opts ...grpc.CallOption) (*Ack, error)
+	Listen(ctx context.Context, in *Listener, opts ...grpc.CallOption) (Broker_ListenClient, error)
 }
 
 type brokerClient struct {
@@ -175,8 +175,8 @@ func NewBrokerClient(cc *grpc.ClientConn) BrokerClient {
 	return &brokerClient{cc}
 }
 
-func (c *brokerClient) Whisper(ctx context.Context, in *Rumor, opts ...grpc.CallOption) (*Response, error) {
-	out := new(Response)
+func (c *brokerClient) Whisper(ctx context.Context, in *Rumor, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
 	err := c.cc.Invoke(ctx, "/grpc.Broker/Whisper", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -184,19 +184,42 @@ func (c *brokerClient) Whisper(ctx context.Context, in *Rumor, opts ...grpc.Call
 	return out, nil
 }
 
-func (c *brokerClient) Listen(ctx context.Context, in *Listener, opts ...grpc.CallOption) (*Rumor, error) {
-	out := new(Rumor)
-	err := c.cc.Invoke(ctx, "/grpc.Broker/Listen", in, out, opts...)
+func (c *brokerClient) Listen(ctx context.Context, in *Listener, opts ...grpc.CallOption) (Broker_ListenClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Broker_serviceDesc.Streams[0], "/grpc.Broker/Listen", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &brokerListenClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Broker_ListenClient interface {
+	Recv() (*Rumor, error)
+	grpc.ClientStream
+}
+
+type brokerListenClient struct {
+	grpc.ClientStream
+}
+
+func (x *brokerListenClient) Recv() (*Rumor, error) {
+	m := new(Rumor)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // BrokerServer is the server API for Broker service.
 type BrokerServer interface {
-	Whisper(context.Context, *Rumor) (*Response, error)
-	Listen(context.Context, *Listener) (*Rumor, error)
+	Whisper(context.Context, *Rumor) (*Ack, error)
+	Listen(*Listener, Broker_ListenServer) error
 }
 
 func RegisterBrokerServer(s *grpc.Server, srv BrokerServer) {
@@ -221,22 +244,25 @@ func _Broker_Whisper_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Broker_Listen_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Listener)
-	if err := dec(in); err != nil {
-		return nil, err
+func _Broker_Listen_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(Listener)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(BrokerServer).Listen(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/grpc.Broker/Listen",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BrokerServer).Listen(ctx, req.(*Listener))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(BrokerServer).Listen(m, &brokerListenServer{stream})
+}
+
+type Broker_ListenServer interface {
+	Send(*Rumor) error
+	grpc.ServerStream
+}
+
+type brokerListenServer struct {
+	grpc.ServerStream
+}
+
+func (x *brokerListenServer) Send(m *Rumor) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 var _Broker_serviceDesc = grpc.ServiceDesc{
@@ -247,29 +273,31 @@ var _Broker_serviceDesc = grpc.ServiceDesc{
 			MethodName: "Whisper",
 			Handler:    _Broker_Whisper_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "Listen",
-			Handler:    _Broker_Listen_Handler,
+			StreamName:    "Listen",
+			Handler:       _Broker_Listen_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "schampionne.proto",
 }
 
-func init() { proto.RegisterFile("schampionne.proto", fileDescriptor_schampionne_90caa4118106af1d) }
+func init() { proto.RegisterFile("schampionne.proto", fileDescriptor_schampionne_bb624370ceaa2246) }
 
-var fileDescriptor_schampionne_90caa4118106af1d = []byte{
+var fileDescriptor_schampionne_bb624370ceaa2246 = []byte{
 	// 180 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x2c, 0x4e, 0xce, 0x48,
 	0xcc, 0x2d, 0xc8, 0xcc, 0xcf, 0xcb, 0x4b, 0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x49,
 	0x2f, 0x2a, 0x48, 0x56, 0x32, 0xe5, 0x62, 0x0d, 0x2a, 0xcd, 0xcd, 0x2f, 0x12, 0x12, 0xe2, 0x62,
 	0x29, 0xa9, 0x2c, 0x48, 0x95, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0c, 0x02, 0xb3, 0x85, 0x24, 0xb8,
 	0xd8, 0x73, 0x53, 0x8b, 0x8b, 0x13, 0xd3, 0x53, 0x25, 0x98, 0xc0, 0xc2, 0x30, 0xae, 0x92, 0x1c,
-	0x17, 0x87, 0x4f, 0x66, 0x71, 0x49, 0x6a, 0x5e, 0x2a, 0x56, 0x9d, 0x4a, 0x2a, 0x5c, 0x1c, 0x41,
-	0xa9, 0xc5, 0x05, 0xf9, 0x79, 0xc5, 0x28, 0xa6, 0x30, 0xa2, 0x98, 0x62, 0x14, 0xcd, 0xc5, 0xe6,
-	0x54, 0x94, 0x9f, 0x9d, 0x5a, 0x24, 0xa4, 0xc1, 0xc5, 0x1e, 0x9e, 0x91, 0x59, 0x5c, 0x90, 0x5a,
-	0x24, 0xc4, 0xad, 0x07, 0x72, 0x98, 0x1e, 0xd8, 0x55, 0x52, 0x7c, 0x50, 0x0e, 0xd4, 0x2c, 0x25,
-	0x06, 0x21, 0x75, 0x2e, 0x36, 0x88, 0xcd, 0x42, 0x50, 0x39, 0x98, 0x3b, 0xa4, 0x90, 0x35, 0x2a,
-	0x31, 0x24, 0xb1, 0x81, 0xbd, 0x69, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xaf, 0xc0, 0x4e, 0x9b,
-	0xfb, 0x00, 0x00, 0x00,
+	0x17, 0x87, 0x4f, 0x66, 0x71, 0x49, 0x6a, 0x5e, 0x2a, 0x56, 0x9d, 0x4a, 0xf2, 0x5c, 0xcc, 0x8e,
+	0xc9, 0xd9, 0xc8, 0x06, 0x30, 0xa2, 0x18, 0x60, 0x14, 0xc1, 0xc5, 0xe6, 0x54, 0x94, 0x9f, 0x9d,
+	0x5a, 0x24, 0xa4, 0xcc, 0xc5, 0x1e, 0x9e, 0x91, 0x59, 0x5c, 0x90, 0x5a, 0x24, 0xc4, 0xad, 0x07,
+	0x72, 0x93, 0x1e, 0xd8, 0x41, 0x52, 0x9c, 0x10, 0x8e, 0x63, 0x72, 0xb6, 0x12, 0x83, 0x90, 0x26,
+	0x17, 0x1b, 0xc4, 0x3e, 0x21, 0x3e, 0x88, 0x30, 0xcc, 0x76, 0x29, 0x64, 0x3d, 0x4a, 0x0c, 0x06,
+	0x8c, 0x49, 0x6c, 0x60, 0xef, 0x19, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x51, 0x56, 0xdf, 0x44,
+	0xf3, 0x00, 0x00, 0x00,
 }

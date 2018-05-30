@@ -3,8 +3,8 @@ syntax = "proto3";
 package grpc;
 
 service Broker {
-  rpc Whisper (Rumor) returns (Response) {}
-  rpc Listen (Listener) returns (Rumor) {}
+  rpc Whisper (Rumor) returns (Ack) {}
+  rpc Listen (Listener) returns (stream Rumor) {}
 }
 
 message Rumor {
@@ -16,6 +16,6 @@ message Listener {
     string type = 1;
 }
 
-message Response {
+message Ack {
     string message = 1;
 }
