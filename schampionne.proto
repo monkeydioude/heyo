@@ -18,4 +18,10 @@ message Listener {
 
 message Ack {
     string message = 1;
+    AckCode code = 2;
+}
+
+enum AckCode {
+  OK = 0;
+  NO_LISTENER = 1;
 }

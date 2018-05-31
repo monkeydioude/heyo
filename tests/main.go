@@ -1,12 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
 
 	sc "github.com/monkeydioude/schampionne"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 
@@ -23,6 +23,7 @@ func main() {
 
 	client := sc.NewBrokerClient(conn)
 	listener := &sc.Listener{Type: "test"}
+
 	stream, err := client.Listen(context.Background(), listener)
 
 	if err != nil {
@@ -38,10 +39,11 @@ func main() {
 		}
 
 		if err != nil {
-			log.Fatalf("%s zbrah\n", err)
+			log.Fatalf("Heee?: %s \n", err)
 		}
 
-		fmt.Printf("%+v\n", rumor)
+		fmt.Printf("HELLOOOO %+v\n", rumor)
 	}
+
 	stream.CloseSend()
 }
