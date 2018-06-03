@@ -1,19 +1,21 @@
 syntax = "proto3";
 
-package grpc;
+package schampionne;
 
 service Broker {
   rpc Whisper (Rumor) returns (Ack) {}
-  rpc Listen (Listener) returns (stream Rumor) {}
+  rpc Listen (stream Listener) returns (stream Rumor) {}
 }
 
 message Rumor {
   string type = 1;
   string message = 2;
+  string id = 3;
 }
 
 message Listener {
     string type = 1;
+    string id = 2;
 }
 
 message Ack {

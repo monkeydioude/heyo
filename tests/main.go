@@ -16,19 +16,27 @@ const (
 
 func main() {
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
+
 	if err != nil {
 		log.Fatalf("failed to connect: %s", err)
 	}
-	defer conn.Close()
 
 	client := sc.NewBrokerClient(conn)
 	listener := &sc.Listener{Type: "test"}
 
-	stream, err := client.Listen(context.Background(), listener)
+	stream, err := client.Listen(context.Background())
 
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	err = stream.Send(listener)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer stream.CloseSend()
+	defer conn.Close()
 
 	for {
 		rumor, err := stream.Recv()
@@ -44,6 +52,4 @@ func main() {
 
 		fmt.Printf("HELLOOOO %+v\n", rumor)
 	}
-
-	stream.CloseSend()
 }

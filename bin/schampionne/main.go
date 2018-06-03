@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"log"
 	"net"
 
@@ -9,6 +9,7 @@ import (
 
 	sc "github.com/monkeydioude/schampionne"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -27,11 +28,11 @@ func Ack(m string, code sc.AckCode) *sc.Ack {
 }
 
 func (s *server) Whisper(c context.Context, r *sc.Rumor) (*sc.Ack, error) {
-	if _, ok := s.listeners[r.Type]; !ok {
-		return Ack("No listener", sc.AckCode_NO_LISTENER), fmt.Errorf("No listeners for %s", r.Type)
+	log.Printf("[INFO] Receiving Rumor %+v\n", r)
+	if _, ok := s.listeners[r.Type]; !ok || len(s.listeners) == 0 {
+		log.Printf("[INFO] No listener for Type \"%s\"\n", r.Type)
+		return Ack("No listener", sc.AckCode_NO_LISTENER), errors.New("No listener")
 	}
-
-	fmt.Printf("Receiving Rumor %+v\n", r)
 
 	for _, c := range s.listeners[r.Type] {
 		c <- r
@@ -40,14 +41,32 @@ func (s *server) Whisper(c context.Context, r *sc.Rumor) (*sc.Ack, error) {
 	return Ack("Ok", sc.AckCode_OK), nil
 }
 
-func (s *server) Listen(l *sc.Listener, stream sc.Broker_ListenServer) error {
+func (s *server) Listen(stream sc.Broker_ListenServer) error {
+	l, err := stream.Recv()
+	if err != nil {
+		log.Printf("[WARN] %s\n", err)
+	}
+
+	p, ok := peer.FromContext(stream.Context())
+	if ok == false {
+		log.Println("[WARN] Could not fetch peer Context")
+	}
+
+	log.Printf("[INFO] Incoming Listener for Type \"%s\" %+v\n", l.Type, p)
+
 	cr := make(chan *sc.Rumor)
 	s.listeners[l.Type] = append(s.listeners[l.Type], cr)
+
+	go func() {
+		<-stream.Context().Done()
+		cr <- nil
+	}()
 
 	for {
 		r := <-cr
 		if r == nil {
-			log.Printf("[INFO] Listener for %s ended\n", l.Type)
+			log.Printf("[INFO] Listener for Type \"%s\" disconnected %+v\n", l.Type, p)
+			delete(s.listeners, l.Type)
 			break
 		}
 		stream.Send(r)

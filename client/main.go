@@ -1,12 +1,10 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 
 	sc "github.com/monkeydioude/schampionne"
-	"google.golang.org/grpc"
 )
 
 const (
@@ -14,19 +12,14 @@ const (
 )
 
 func main() {
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	client := sc.NewClient(address)
+
+	defer client.Close()
+
+	ack, err := client.Whisper("test", "pouet")
 	if err != nil {
-		log.Fatalf("failed to connect: %s", err)
+		log.Fatal(err)
 	}
-	defer conn.Close()
 
-	client := sc.NewBrokerClient(conn)
-
-	r := &sc.Rumor{Type: "test", Message: "test"}
-
-	fmt.Printf("SENDING: %+v, ", r)
-
-	ack, _ := client.Whisper(context.Background(), r)
-
-	fmt.Printf("Ack received: m:(%s), c:(%d)\n", ack.Message, ack.Code)
+	fmt.Printf("Ack received: m:(%s), c:(%d)\n", ack.GetMessage(), ack.GetCode())
 }
