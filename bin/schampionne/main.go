@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"net"
 
@@ -9,7 +8,9 @@ import (
 
 	sc "github.com/monkeydioude/schampionne"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/status"
 )
 
 const port = ":9393"
@@ -31,7 +32,7 @@ func (s *server) Whisper(c context.Context, r *sc.Rumor) (*sc.Ack, error) {
 
 	if _, ok := s.listeners[r.Type]; !ok || len(s.listeners) == 0 {
 		log.Printf("[INFO] No listener for Type \"%s\"\n", r.Type)
-		return Ack("No listener", sc.AckCode_NO_LISTENER), errors.New("No listener")
+		return nil, status.Error(codes.OutOfRange, "No listener")
 	}
 
 	for _, c := range s.listeners[r.Type] {
@@ -44,7 +45,8 @@ func (s *server) Whisper(c context.Context, r *sc.Rumor) (*sc.Ack, error) {
 func (s *server) Listen(stream sc.Broker_ListenServer) error {
 	l, err := stream.Recv()
 	if err != nil {
-		log.Printf("[WARN] %s\n", err)
+		log.Printf("[ERR ] %s\n", err)
+		return err
 	}
 
 	p, ok := peer.FromContext(stream.Context())

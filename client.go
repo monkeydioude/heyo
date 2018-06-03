@@ -2,6 +2,7 @@ package schampionne
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	uuid "github.com/satori/go.uuid"
@@ -55,4 +56,8 @@ func (c *Client) Whisper(t, m string) (*Ack, error) {
 func (c *Client) WhisperRumor(r *Rumor) (*Ack, error) {
 	log.Printf("[INFO] Sending Rumor %+v\n", r)
 	return c.grpc.Whisper(context.Background(), r)
+}
+
+func (a *Ack) Error() string {
+	return fmt.Sprintf("Code: %d, Message: %s", a.Code, a.Message)
 }

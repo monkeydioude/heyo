@@ -21,5 +21,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Ack received: m:(%s), c:(%d)\n", ack.GetMessage(), ack.GetCode())
+	fmt.Printf("Ack received: m:(%s), c:(%s)\n", ack.Message, ack.Code)
 }
