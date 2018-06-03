@@ -10,7 +10,6 @@ import (
 	sc "github.com/monkeydioude/schampionne"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
-	"google.golang.org/grpc/reflection"
 )
 
 const port = ":9393"
@@ -29,6 +28,7 @@ func Ack(m string, code sc.AckCode) *sc.Ack {
 
 func (s *server) Whisper(c context.Context, r *sc.Rumor) (*sc.Ack, error) {
 	log.Printf("[INFO] Receiving Rumor %+v\n", r)
+
 	if _, ok := s.listeners[r.Type]; !ok || len(s.listeners) == 0 {
 		log.Printf("[INFO] No listener for Type \"%s\"\n", r.Type)
 		return Ack("No listener", sc.AckCode_NO_LISTENER), errors.New("No listener")
@@ -77,17 +77,16 @@ func (s *server) Listen(stream sc.Broker_ListenServer) error {
 
 func main() {
 	lis, err := net.Listen("tcp", port)
-
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
+
 	sc.RegisterBrokerServer(s, &server{
 		listeners: make(map[string][]chan *sc.Rumor),
 	})
 
-	reflection.Register(s)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
