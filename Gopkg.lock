@@ -11,7 +11,7 @@
   name = "github.com/monkeydioude/go.uuid"
   packages = ["."]
   revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
-  version = "v1.3.0"
+  version = "v2.0.0"
 
 [[projects]]
   branch = "master"
@@ -40,6 +40,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9cf220a380925f9d5764d70f8747252059951424299b01855865520ec5a6e195"
+  inputs-digest = "892454195fb5bc37d77c8caeaa43e8e530873e41899807fdbc59f0662fd25e5b"
   solver-name = "gps-cdcl"
   solver-version = 1
