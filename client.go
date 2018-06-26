@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	uuid "github.com/satori/go.uuid"
+	uuid "github.com/monkeydioude/go.uuid"
 	"google.golang.org/grpc"
 )
 

@@ -8,10 +8,10 @@
   version = "v1.1.0"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/satori/go.uuid"
+  name = "github.com/monkeydioude/go.uuid"
   packages = ["."]
   revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
+  version = "v1.3.0"
 
 [[projects]]
   branch = "master"
@@ -40,6 +40,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5b58ae34ae4ee72f3950237f835d8b3ccabffae5fbac5a4265e8fc68b0ba9839"
+  inputs-digest = "262a71b83de51f779d3ee910d4812114e344752718036f64fadc34bad823ea25"
   solver-name = "gps-cdcl"
   solver-version = 1
