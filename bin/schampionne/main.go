@@ -14,6 +14,7 @@ import (
 )
 
 const port = ":9393"
+const httpPort = ":6363"
 
 type server struct {
 	listeners map[string][]chan *sc.Rumor
@@ -88,6 +89,8 @@ func main() {
 	sc.RegisterBrokerServer(s, &server{
 		listeners: make(map[string][]chan *sc.Rumor),
 	})
+
+	go httpServer()
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
