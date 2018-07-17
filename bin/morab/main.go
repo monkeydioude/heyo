@@ -5,13 +5,14 @@ import (
 	"log"
 
 	"github.com/monkeydioude/moon"
+	"github.com/monkeydioude/schampionne/bin/morab/www"
 	"github.com/monkeydioude/tools"
 )
 
-const port = 19393
+const port = 6363
 
 func getHome(r *moon.Request, c *moon.Configuration) ([]byte, int, error) {
-	return tools.Response200([]byte("ok"))
+	return www.GetHome()
 }
 
 func postHome(r *moon.Request, c *moon.Configuration) ([]byte, int, error) {
@@ -19,7 +20,7 @@ func postHome(r *moon.Request, c *moon.Configuration) ([]byte, int, error) {
 }
 
 func isBrokerHealthy() error {
-	res, err := tools.SendSimpleGetRequest(nil, nil, "http://localhost:6363/healthcheck")
+	res, err := tools.SendSimpleGetRequest(nil, nil, "http://localhost:19393/healthcheck")
 
 	if err != nil {
 		return err
@@ -33,11 +34,10 @@ func isBrokerHealthy() error {
 }
 
 func main() {
-	// use goroutine
 	if err := isBrokerHealthy(); err != nil {
-		log.Fatalf("[ERR ] Could not start Morab. Reason: %s", err)
+		log.Printf("[WARN] Broker could not be reached. Reason: %s", err)
 	}
-	log.Println("[INFO] Broker's up, starting Morab")
+	log.Println("[INFO] Starting Morab")
 
 	handler := moon.NewHandler(nil)
 	handler.WithHeader("Access-Control-Allow-Origin", "*")

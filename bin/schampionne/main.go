@@ -14,7 +14,7 @@ import (
 )
 
 const port = ":9393"
-const httpPort = ":6363"
+const httpPort = ":19393"
 
 type server struct {
 	listeners map[string][]chan *sc.Rumor
