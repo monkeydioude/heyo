@@ -4,20 +4,16 @@ import (
 	"github.com/monkeydioude/moon/template"
 )
 
-type Home struct {
-	Title string
-	Body  string
-}
-
 // GetHome display home
 func GetHome() ([]byte, int, error) {
 	tmp := template.NewEngine("www/layout.html")
+
 	tmp.
-		WithChild("www/home.html", "Content").
-		AddValue(&Home{
-			Title: "Bonjour",
-			// Body:  "c'est cool",
-		}).
-		WithChild("www/list.html", "List")
+		BindTemplate("www/home.html", "Content").
+		AddValue("Title", "Salut").
+		// AddValue("Body", "C'est cool")
+		BindTemplate("www/list.html", "List").
+		AddValue("bonjour", "bien ?")
+
 	return tmp.Render(), 200, nil
 }
