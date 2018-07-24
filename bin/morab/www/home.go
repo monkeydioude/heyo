@@ -10,10 +10,9 @@ func GetHome() ([]byte, int, error) {
 
 	tmp.
 		BindTemplate("www/home.html", "Content").
-		AddValue("Title", "Salut").
-		// AddValue("Body", "C'est cool")
+		BindValues(template.HTML{"Title": "Salut Naomie"}).
 		BindTemplate("www/list.html", "List").
-		AddValue("bonjour", "bien ?")
+		BindValue("bonjour", "ca va bien ?")
 
 	return tmp.Render(), 200, nil
 }

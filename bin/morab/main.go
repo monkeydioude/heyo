@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 
 	"github.com/monkeydioude/moon"
@@ -10,6 +11,18 @@ import (
 )
 
 const port = 6363
+
+func getStaticResource(r *moon.Request, c *moon.Configuration) ([]byte, int, error) {
+	cssPath := r.Matches[0]
+
+	css, err := ioutil.ReadFile(cssPath)
+
+	if err != nil {
+		return tools.Response404(err)
+	}
+
+	return tools.Response200(css)
+}
 
 func getHome(r *moon.Request, c *moon.Configuration) ([]byte, int, error) {
 	return www.GetHome()
@@ -44,6 +57,7 @@ func main() {
 
 	handler.Routes.AddPost("^$", postHome)
 	handler.Routes.AddGet("^$", getHome)
+	handler.Routes.AddGet("^.+?\\.(css|js)$", getStaticResource)
 
 	err := moon.ServerRun(fmt.Sprintf(":%d", port), handler)
 	if err != nil {
