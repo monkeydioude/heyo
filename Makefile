@@ -2,5 +2,5 @@
 
 all: proto-gen
 
-proto-gen:
-	@protoc schampionne.proto --go_out=plugins=grpc:.
+proto-gen: # Re-generate the .pb.go files from their .proto parent
+	@protoc --go_out=plugins=grpc:. *.proto

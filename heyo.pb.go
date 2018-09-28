@@ -7,6 +7,11 @@ import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
+import (
+	context "golang.org/x/net/context"
+	grpc "google.golang.org/grpc"
+)
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
@@ -192,6 +197,144 @@ func init() {
 	proto.RegisterType((*Listener)(nil), "heyo.Listener")
 	proto.RegisterType((*Ack)(nil), "heyo.Ack")
 	proto.RegisterEnum("heyo.AckCode", AckCode_name, AckCode_value)
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// BrokerClient is the client API for Broker service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type BrokerClient interface {
+	Whisper(ctx context.Context, in *Rumor, opts ...grpc.CallOption) (*Ack, error)
+	Listen(ctx context.Context, opts ...grpc.CallOption) (Broker_ListenClient, error)
+}
+
+type brokerClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewBrokerClient(cc *grpc.ClientConn) BrokerClient {
+	return &brokerClient{cc}
+}
+
+func (c *brokerClient) Whisper(ctx context.Context, in *Rumor, opts ...grpc.CallOption) (*Ack, error) {
+	out := new(Ack)
+	err := c.cc.Invoke(ctx, "/heyo.Broker/Whisper", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *brokerClient) Listen(ctx context.Context, opts ...grpc.CallOption) (Broker_ListenClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Broker_serviceDesc.Streams[0], "/heyo.Broker/Listen", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &brokerListenClient{stream}
+	return x, nil
+}
+
+type Broker_ListenClient interface {
+	Send(*Listener) error
+	Recv() (*Rumor, error)
+	grpc.ClientStream
+}
+
+type brokerListenClient struct {
+	grpc.ClientStream
+}
+
+func (x *brokerListenClient) Send(m *Listener) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *brokerListenClient) Recv() (*Rumor, error) {
+	m := new(Rumor)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// BrokerServer is the server API for Broker service.
+type BrokerServer interface {
+	Whisper(context.Context, *Rumor) (*Ack, error)
+	Listen(Broker_ListenServer) error
+}
+
+func RegisterBrokerServer(s *grpc.Server, srv BrokerServer) {
+	s.RegisterService(&_Broker_serviceDesc, srv)
+}
+
+func _Broker_Whisper_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Rumor)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BrokerServer).Whisper(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/heyo.Broker/Whisper",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BrokerServer).Whisper(ctx, req.(*Rumor))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Broker_Listen_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BrokerServer).Listen(&brokerListenServer{stream})
+}
+
+type Broker_ListenServer interface {
+	Send(*Rumor) error
+	Recv() (*Listener, error)
+	grpc.ServerStream
+}
+
+type brokerListenServer struct {
+	grpc.ServerStream
+}
+
+func (x *brokerListenServer) Send(m *Rumor) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *brokerListenServer) Recv() (*Listener, error) {
+	m := new(Listener)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+var _Broker_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "heyo.Broker",
+	HandlerType: (*BrokerServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Whisper",
+			Handler:    _Broker_Whisper_Handler,
+		},
+	},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Listen",
+			Handler:       _Broker_Listen_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
+	Metadata: "heyo.proto",
 }
 
 func init() { proto.RegisterFile("heyo.proto", fileDescriptor_heyo_6d025808cbeaeb47) }
