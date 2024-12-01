@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package rpc;
+
+option go_package = "pkg/rpc";
+
+service Broker {
+    // Server side: handle message reception and dispatch
+    //
+    // Client side: put a message to the queue
+	rpc Enqueue (Message) returns (Ack) {}
+    // Server side: handle subscribing clients
+    //
+    // Client side: subscribe to an event
+	rpc Subscription (Subscriber) returns (stream Message) {}
+}
+
+message Empty {}
+
+message Handshake {
+    string client_uuid = 1;
+}
+
+message Message {
+	string event = 1;
+	string data = 2;
+	string message_uuid = 3;
+    string client_uuid = 4;
+}
+
+message Subscriber {
+	string event = 1;
+    string client_uuid = 2;
+}
+
+message Ack {
+	string data = 1;
+	AckCode code = 2;
+}
+
+enum AckCode {
+	OK = 0;             // Message successfully received
+	NO_LISTENER = 1;    // No matching subscriber for the event
+	QUEUE_FULL = 2;     // Queue is full, unable to receive message
+	INTERNAL_ERROR = 3; // General server-side error
+    UNKNOWN_EVENT = 4;
+}

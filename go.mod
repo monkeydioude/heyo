@@ -1,19 +1,21 @@
 module github.com/monkeydioude/heyo
 
+go 1.23.1
+
 require (
-	github.com/golang/protobuf v1.1.0
-	github.com/monkeydioude/go.uuid v2.0.0+incompatible
-	github.com/monkeydioude/moon v0.0.0-20180803115213-cb4529e3ff43
-	github.com/monkeydioude/schampionne v0.0.0-20180928140440-208c7e108111
-	github.com/monkeydioude/tools v0.0.0-20180814111526-38d30a856958
-	golang.org/x/net v0.7.0
-	google.golang.org/grpc v1.13.0
+	github.com/oklog/run v1.1.0
+	google.golang.org/grpc v1.67.0
+	google.golang.org/protobuf v1.34.2
 )
 
 require (
-	github.com/golang/glog v1.1.0 // indirect
-	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
-	google.golang.org/genproto v0.0.0-20180621235812-80063a038e33 // indirect
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/google/uuid v1.6.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/stretchr/testify v1.10.0 // indirect
+	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/sys v0.24.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

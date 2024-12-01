@@ -1,3 +1,4 @@
 .history
-bin/heyo/heyo
+cmd/heyo/heyo
+cmd/morab/morab
 vendor

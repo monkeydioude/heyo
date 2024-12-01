@@ -1,7 +1,0 @@
-[[constraint]]
-  name = "github.com/monkeydioude/moon"
-  version = "1.2.0"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/monkeydioude/tools"
