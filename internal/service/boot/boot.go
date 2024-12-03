@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/monkeydioude/heyo/internal/consts"
 	"github.com/monkeydioude/heyo/internal/service/client"
@@ -14,13 +15,17 @@ import (
 )
 
 func getRPCClient() rpc.BrokerClient {
+	ip := os.Getenv("SERVER_IP")
+	if ip == "" {
+		ip = "[::]"
+	}
 	cl, err := grpc.NewClient(
-		fmt.Sprintf("[::]:%s", consts.RPCPort),
+		fmt.Sprintf("%s:%s", ip, consts.RPCPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	assert.NoError(err)
 	assert.NotNil(cl)
-	log.Printf("[INFO] connecting to port [::]:%s\n", consts.RPCPort)
+	log.Printf("[INFO] connecting to port %s:%s\n", ip, consts.RPCPort)
 	return rpc.NewBrokerClient(cl)
 }
 
