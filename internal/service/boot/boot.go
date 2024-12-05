@@ -2,6 +2,7 @@ package boot
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"log"
 
@@ -10,13 +11,16 @@ import (
 	"github.com/monkeydioude/heyo/pkg/rpc"
 	"github.com/monkeydioude/heyo/pkg/tiger/assert"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 )
 
 func getRPCClient() rpc.BrokerClient {
+	creds := credentials.NewTLS(&tls.Config{
+		InsecureSkipVerify: true, // Skip verification for testing; remove this in production
+	})
 	cl, err := grpc.NewClient(
 		fmt.Sprintf("[::]:%s", consts.RPCPort),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithTransportCredentials(creds),
 	)
 	assert.NoError(err)
 	assert.NotNil(cl)
