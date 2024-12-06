@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 
 	"github.com/monkeydioude/heyo/internal/consts"
 	"github.com/monkeydioude/heyo/internal/handler/server"
 	"github.com/monkeydioude/heyo/pkg/rpc"
 	"github.com/oklog/run"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 func grpcRouting(ctx context.Context, s *grpc.Server) {
@@ -18,12 +20,22 @@ func grpcRouting(ctx context.Context, s *grpc.Server) {
 }
 
 func grpcServer(ctx context.Context, runGroup *run.Group) {
+	port := consts.RPCPort
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
+	}
 	ctx, cancelFn := context.WithCancel(ctx)
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", consts.RPCPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatalf("[ERR ] failed to listen: %v", err)
 	}
-	server := grpc.NewServer()
+	creds, err := credentials.NewServerTLSFromFile("./certs/cert.pem", "./certs/key.pem")
+	if err != nil {
+		log.Fatalf("[ERR ] Invalid creds: %v", err)
+	}
+	server := grpc.NewServer(
+		grpc.Creds(creds),
+	)
 	grpcRouting(ctx, server)
 	runGroup.Add(func() error {
 		log.Println("[INFO] RPC starting on", lis.Addr())
