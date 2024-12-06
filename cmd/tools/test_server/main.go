@@ -43,7 +43,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net"
+	"net/http"
 	"os"
 
 	"github.com/monkeydioude/heyo/pkg/tiger/assert"
@@ -57,27 +57,52 @@ var ErrFailedToStartListener = errors.New("failed to start listener")
 var ErrNewServerFromCreds = errors.New("error using TLS credentials")
 var ErrServerServe = errors.New("failed to serve")
 
-func boot() (net.Listener, *grpc.Server) {
+func boot() (string, *grpc.Server, *http.ServeMux) {
 	port := DefaultPort
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
 	}
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
-	assert.NoError(err, ErrFailedToStartListener)
+	// listener, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
+	// assert.NoError(err, ErrFailedToStartListener)
 
 	// TLS credentials for the backend connection
 	creds, err := credentials.NewServerTLSFromFile("./certs/cert.pem", "./certs/key.pem")
 	assert.NoError(err, ErrNewServerFromCreds)
-	return listener, grpc.NewServer(
+	// Create the HTTP handler
+	mux := http.NewServeMux()
+
+	// REST API handler
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		log.Println("[INFO] received request on ", r.Method, r.URL)
+		w.Write([]byte("Handled REST API request"))
+	})
+	return port, grpc.NewServer(
 		grpc.Creds(creds),
 		grpc.UnknownServiceHandler((&CatchAllProxy{}).Proxy),
-	)
+	), mux
+}
+
+func grpcHandler(grpcServer *grpc.Server, otherHandler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.ProtoMajor == 2 && r.Header.Get("Content-Type") == "application/grpc" {
+			grpcServer.ServeHTTP(w, r)
+		} else {
+			otherHandler.ServeHTTP(w, r)
+		}
+	})
 }
 
 func main() {
-	listener, server := boot()
-	assert.NotNil(listener)
-	assert.NotNil(server)
-	log.Println("[INFO] Starting reverse proxy on", listener.Addr())
-	assert.NoError(server.Serve(listener), ErrServerServe)
+	port, grpcServer, mux := boot()
+	assert.NotEmpty(port)
+	assert.NotNil(mux)
+	assert.NotNil(grpcServer)
+	// Start the HTTP/2 server
+	server := &http.Server{
+		Addr:    fmt.Sprintf(":%s", port),
+		Handler: grpcHandler(grpcServer, mux),
+	}
+	log.Println("[INFO] Starting reverse proxy on", port)
+	assert.NoError(server.ListenAndServeTLS("certs/cert.pem", "certs/key.pem"), ErrServerServe)
 }

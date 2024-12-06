@@ -11,7 +11,7 @@ var ErrShouldNotBeEmpty = errors.New("value should not be empty")
 
 func NoError(err error, wrap ...error) {
 	if err != nil {
-		log.Fatalf("%s %s", ErrErrorShouldBeNil, errors.Join(wrap...))
+		log.Fatalf("%s: %s: %s", ErrErrorShouldBeNil, err, errors.Join(wrap...))
 	}
 }
 
