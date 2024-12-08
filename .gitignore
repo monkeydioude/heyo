@@ -2,3 +2,6 @@
 cmd/heyo/heyo
 cmd/morab/morab
 vendor
+
+**/*.crt
+**/*.key
