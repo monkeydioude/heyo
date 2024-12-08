@@ -29,7 +29,7 @@ func grpcServer(ctx context.Context, runGroup *run.Group) {
 	if err != nil {
 		log.Fatalf("[ERR ] failed to listen: %v", err)
 	}
-	creds, err := credentials.NewServerTLSFromFile("./certs/cert.pem", "./certs/key.pem")
+	creds, err := credentials.NewServerTLSFromFile("./certs/localhost.crt", "./certs/localhost.key")
 	if err != nil {
 		log.Fatalf("[ERR ] Invalid creds: %v", err)
 	}

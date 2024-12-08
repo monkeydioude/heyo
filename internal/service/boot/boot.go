@@ -3,7 +3,6 @@ package boot
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -22,12 +21,12 @@ func getRPCClient() rpc.BrokerClient {
 		InsecureSkipVerify: true, // Skip verification for testing; remove this in production
 	})
 
-	port := consts.RPCPort
-	if os.Getenv("SERVER_PORT") != "" {
-		port = os.Getenv("SERVER_PORT")
+	addr := consts.RPCPort
+	if os.Getenv("SERVER_ADDR") != "" {
+		addr = os.Getenv("SERVER_ADDR")
 	}
 	cl, err := grpc.NewClient(
-		fmt.Sprintf("[::]:%s", port),
+		addr,
 		grpc.WithTransportCredentials(creds),
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{
 			Time:                5 * time.Second, // Ping every 10 seconds
@@ -37,7 +36,7 @@ func getRPCClient() rpc.BrokerClient {
 	)
 	assert.NoError(err)
 	assert.NotNil(cl)
-	log.Printf("[INFO] connecting to port [::]:%s\n", port)
+	log.Printf("[INFO] connecting to %s\n", addr)
 	return rpc.NewBrokerClient(cl)
 }
 
