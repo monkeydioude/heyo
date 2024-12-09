@@ -29,7 +29,7 @@ func NewExplorer(ctx context.Context) Explorer {
 
 func (e *Explorer) setupReceiverEvents() {
 	e.ctx = e.client.GetCtx()
-	receiverEvents, _ := readInput(e.ctx, "Name of the receiver events (comma separated)?")
+	receiverEvents, _ := readInput(e.ctx, "Events to subscribe to (comma separated)?")
 	for _, event := range strings.Split(receiverEvents, ",") {
 		event = strings.Trim(event, " \n")
 		assert.NotEmpty(event)
@@ -44,6 +44,14 @@ func (e *Explorer) setupReceiverEvents() {
 			return nil
 		})
 	}
+}
+
+func (e *Explorer) setupName() {
+	e.ctx = e.client.GetCtx()
+	name, _ := readInput(e.ctx, "Your name?")
+	name = strings.Trim(name, " \n")
+	assert.NotEmpty(name)
+	e.client.Uuid = name
 }
 
 func (e *Explorer) sendMessage(in *rpc.Message) error {

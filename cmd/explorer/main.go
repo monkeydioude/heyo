@@ -9,6 +9,7 @@ import (
 func main() {
 	ctx := context.TODO()
 	explorer := NewExplorer(ctx)
+	explorer.setupName()
 	explorer.setupReceiverEvents()
 	for {
 		in, err := buildMessage(explorer.GetCtx(), explorer.client.Uuid)
