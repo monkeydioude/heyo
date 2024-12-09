@@ -15,9 +15,9 @@ func NoError(err error, wrap ...error) {
 	}
 }
 
-func NotNil(ptr any) {
+func NotNil(ptr any, wrap ...error) {
 	if ptr == nil {
-		log.Fatal(ErrErrorShouldBeNil)
+		log.Fatalf("%s: %s", ErrErrorShouldBeNil, errors.Join(wrap...))
 	}
 }
 
@@ -30,4 +30,14 @@ func NotEmpty(value any, wrap ...error) {
 			log.Fatalf("string value: %s: %s", ErrShouldNotBeEmpty, errors.Join(wrap...))
 		}
 	}
+}
+
+type AssertTrial interface {
+	*string
+	any
+}
+
+func NotNilNorEmpty[T AssertTrial](value T, wrap ...error) {
+	NotNil(value, wrap...)
+	NotEmpty(*value, wrap...)
 }

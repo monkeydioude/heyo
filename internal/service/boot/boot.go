@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"log"
 	"os"
-	"time"
 
 	"github.com/monkeydioude/heyo/internal/consts"
 	"github.com/monkeydioude/heyo/internal/service/client"
@@ -13,7 +12,6 @@ import (
 	"github.com/monkeydioude/heyo/pkg/tiger/assert"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/keepalive"
 )
 
 func getRPCClient() rpc.BrokerClient {
@@ -21,18 +19,18 @@ func getRPCClient() rpc.BrokerClient {
 		InsecureSkipVerify: true, // Skip verification for testing; remove this in production
 	})
 
-	addr := consts.RPCPort
+	addr := consts.RPCAddr
 	if os.Getenv("SERVER_ADDR") != "" {
 		addr = os.Getenv("SERVER_ADDR")
 	}
 	cl, err := grpc.NewClient(
 		addr,
 		grpc.WithTransportCredentials(creds),
-		grpc.WithKeepaliveParams(keepalive.ClientParameters{
-			Time:                5 * time.Second, // Ping every 10 seconds
-			Timeout:             5 * time.Second, // Wait 5 seconds for a ping response
-			PermitWithoutStream: true,            // Allow pings even without active streams
-		}),
+		// grpc.WithKeepaliveParams(keepalive.ClientParameters{
+		// 	Time:                10 * time.Second, // Ping every 10 seconds
+		// 	Timeout:             5 * time.Second,  // Wait 5 seconds for a ping response
+		// 	PermitWithoutStream: true,             // Allow pings even without active streams
+		// }),
 	)
 	assert.NoError(err)
 	assert.NotNil(cl)
