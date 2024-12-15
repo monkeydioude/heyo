@@ -34,11 +34,11 @@ func (e *Explorer) setupReceiverEvents() {
 		event = strings.Trim(event, " \n")
 		assert.NotEmpty(event)
 		e.client.Listen(event, func(msg *rpc.Message) error {
-			if e.State == state.STATE_IDLE && msg.ClientUuid != e.client.Uuid {
+			if e.State == state.STATE_IDLE && msg.ClientId != e.client.Uuid {
 				fmt.Println("")
 			}
-			fmt.Printf("Message (%s) < %s\n", msg.ClientUuid, msg.Data)
-			if e.State == state.STATE_IDLE && msg.ClientUuid != e.client.Uuid {
+			fmt.Printf("Message (%s) < %s\n", msg.ClientId, msg.Data)
+			if e.State == state.STATE_IDLE && msg.ClientId != e.client.Uuid {
 				fmt.Printf("Message (%s) > ", e.client.Uuid)
 			}
 			return nil
@@ -61,7 +61,7 @@ func (e *Explorer) sendMessage(in *rpc.Message) error {
 	}
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second*5)
 	defer cancel()
-	in.ClientUuid = e.client.Uuid
+	in.ClientId = e.client.Uuid
 	ack, err := e.client.RpcClient.Enqueue(ctx, in)
 	if err != nil {
 		return fmt.Errorf("%w: %w", err, ErrEnqueuingMessage)

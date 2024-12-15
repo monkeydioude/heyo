@@ -41,7 +41,7 @@ func (cf *ClientFactory) NewFromSubscription(
 	return Client{
 		Event:          sub.Event,
 		ResponseSender: res.Send,
-		Uuid:           sub.ClientUuid,
+		Uuid:           sub.ClientId,
 		SubscribedAt:   cf.timeFn(),
 		MessageChan:    make(chan *rpc.Message, 100),
 	}

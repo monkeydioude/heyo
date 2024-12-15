@@ -13,16 +13,16 @@ pub struct Message {
     #[prost(string, tag = "2")]
     pub data: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
-    pub message_uuid: ::prost::alloc::string::String,
+    pub message_id: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
-    pub client_uuid: ::prost::alloc::string::String,
+    pub client_id: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Subscriber {
     #[prost(string, tag = "1")]
     pub event: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
-    pub client_uuid: ::prost::alloc::string::String,
+    pub client_id: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Ack {

@@ -51,10 +51,10 @@ func (m Mode) Do(
 			assert.NotEmpty(msg)
 			log.Println("sending message", msg)
 			_, err = client.RpcClient.Enqueue(ctx, &rpc.Message{
-				Event:       event,
-				Data:        msg,
-				MessageUuid: uuid.NewString(),
-				ClientUuid:  client.Uuid,
+				Event:     event,
+				Data:      msg,
+				MessageId: uuid.NewString(),
+				ClientId:  client.Uuid,
 			})
 		}
 	case ModeSubscription:

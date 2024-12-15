@@ -50,7 +50,7 @@ func New(ctx context.Context, RpcClient rpc.BrokerClient) Client {
 // 			return err
 // 		}
 // 		cl.mutex.Lock()
-// 		cl.Uuid = hs.ClientUuid
+// 		cl.Uuid = hs.ClientId
 // 		log.Printf("[INFO] handshake SUCCESS, setting client uuid to %s", cl.Uuid)
 // 		cl.mutex.Unlock()
 // 		return nil
@@ -70,8 +70,8 @@ func New(ctx context.Context, RpcClient rpc.BrokerClient) Client {
 
 func (cl *Client) MakeSubscription(event string) (grpc.ServerStreamingClient[rpc.Message], error) {
 	sub := rpc.Subscriber{
-		Event:      event,
-		ClientUuid: cl.Uuid,
+		Event:    event,
+		ClientId: cl.Uuid,
 	}
 	stream, err := cl.RpcClient.Subscription(cl.ctx, &sub)
 	if err != nil {
@@ -105,7 +105,7 @@ func (cl *Client) Listen(
 }
 
 func (cl *Client) Send(event string, msg *rpc.Message) error {
-	msg.ClientUuid = cl.Uuid
+	msg.ClientId = cl.Uuid
 	ctx, cancelFn := context.WithTimeout(cl.ctx, 5*time.Second)
 	defer cancelFn()
 	ack, err := cl.RpcClient.Enqueue(ctx, msg)

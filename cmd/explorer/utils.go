@@ -37,8 +37,8 @@ func readInput(ctx context.Context, msg string) (string, error) {
 	}
 }
 
-func buildMessage(ctx context.Context, clientUuid string) (rpc.Message, error) {
-	input, err := readInput(ctx, fmt.Sprintf("Message (%s)", clientUuid))
+func buildMessage(ctx context.Context, ClientId string) (rpc.Message, error) {
+	input, err := readInput(ctx, fmt.Sprintf("Message (%s)", ClientId))
 	if err != nil {
 		return rpc.Message{}, fmt.Errorf("%w: %w", ErrReadingInput, err)
 	}
@@ -51,8 +51,8 @@ func buildMessage(ctx context.Context, clientUuid string) (rpc.Message, error) {
 		return rpc.Message{}, fmt.Errorf("%w: %w", ErrMessageWasMalformed, ErrLeadingAtMissing)
 	}
 	return rpc.Message{
-		Event:       strings.Trim(parts[0], " @\n"),
-		Data:        strings.Trim(parts[1], " \n"),
-		MessageUuid: uuid.NewString(),
+		Event:     strings.Trim(parts[0], " @\n"),
+		Data:      strings.Trim(parts[1], " \n"),
+		MessageId: uuid.NewString(),
 	}, nil
 }
