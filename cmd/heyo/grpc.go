@@ -12,7 +12,7 @@ import (
 	"github.com/monkeydioude/heyo/pkg/rpc"
 	"github.com/oklog/run"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func grpcRouting(ctx context.Context, s *grpc.Server) {
@@ -29,12 +29,12 @@ func grpcServer(ctx context.Context, runGroup *run.Group) {
 	if err != nil {
 		log.Fatalf("[ERR ] failed to listen: %v", err)
 	}
-	creds, err := credentials.NewServerTLSFromFile("./certs/localhost.crt", "./certs/localhost.key")
-	if err != nil {
-		log.Fatalf("[ERR ] Invalid creds: %v", err)
-	}
+	// creds, err := credentials.NewServerTLSFromFile("./certs/localhost.crt", "./certs/localhost.key")
+	// if err != nil {
+	// 	log.Fatalf("[ERR ] Invalid creds: %v", err)
+	// }
 	server := grpc.NewServer(
-		grpc.Creds(creds),
+		grpc.Creds(insecure.NewCredentials()),
 	)
 	grpcRouting(ctx, server)
 	runGroup.Add(func() error {
