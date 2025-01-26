@@ -11,6 +11,7 @@ import (
 type Client struct {
 	Event          string
 	Uuid           string
+	Name           string
 	SubscribedAt   time.Time
 	ResponseSender func(res *rpc.Message) error
 	MessageChan    chan *rpc.Message
@@ -44,5 +45,6 @@ func (cf *ClientFactory) NewFromSubscription(
 		Uuid:           sub.ClientId,
 		SubscribedAt:   cf.timeFn(),
 		MessageChan:    make(chan *rpc.Message, 100),
+		Name:           sub.Name,
 	}
 }

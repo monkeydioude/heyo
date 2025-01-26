@@ -16,6 +16,8 @@ pub struct Message {
     pub message_id: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
     pub client_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "5")]
+    pub client_name: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Subscriber {
@@ -23,6 +25,8 @@ pub struct Subscriber {
     pub event: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub client_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub name: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Ack {

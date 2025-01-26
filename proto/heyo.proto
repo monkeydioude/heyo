@@ -26,11 +26,13 @@ message Message {
 	string data = 2;
 	string message_id = 3;
     string client_id = 4;
+    string client_name = 5;
 }
 
 message Subscriber {
 	string event = 1;
     string client_id = 2;
+    string name = 3;
 }
 
 message Ack {

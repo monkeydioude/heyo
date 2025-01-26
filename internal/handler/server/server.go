@@ -24,7 +24,7 @@ func (hs *HeyoServer) Enqueue(ctx context.Context, in *rpc.Message) (*rpc.Ack, e
 	if in == nil {
 		return nil, fmt.Errorf("Enqueue: %w", ErrNilIncomingMessage)
 	}
-	log.Printf("[INFO] '%s': from client '%s', message '%s', payload: %s\n", in.Event, in.ClientId, in.MessageId, in.Data)
+	log.Printf("[INFO] '%s': from client '%s:%s', message_id '%s', payload: %s\n", in.Event, in.ClientName, in.ClientId, in.MessageId, in.Data)
 	err := hs.clients.Send(in)
 	if err != nil {
 		code := rpc.AckCode_INTERNAL_ERROR
@@ -49,7 +49,7 @@ func (hs *HeyoServer) Subscription(
 	hs.mutex.Lock()
 	client := hs.clientFactory.NewFromSubscription(subscriber, res)
 	hs.clients.Add(&client)
-	log.Printf("[INFO] '%s' subscribed to '%s'\n", client.Uuid, client.Event)
+	log.Printf("[INFO] '%s:%s' subscribed to '%s'\n", client.Name, client.Uuid, client.Event)
 	log.Printf("[INFO] '%s' now has %d subscribers", subscriber.Event, hs.clients.Len(subscriber.Event))
 	hs.mutex.Unlock()
 
@@ -59,7 +59,7 @@ func (hs *HeyoServer) Subscription(
 	for {
 		select {
 		case msg := <-client.MessageChan:
-			log.Printf("[INFO] '%s': sending message '%s' to client '%s'\n", client.Event, msg.MessageId, client.Uuid)
+			log.Printf("[INFO] '%s:%s': sending message_id '%s' to client '%s'\n", client.Name, client.Event, msg.MessageId, client.Uuid)
 			// Send the message to the client
 			if err := res.Send(msg); err != nil {
 				log.Printf("[ERR ] error sending message to '%s' of '%s': %v\n", client.Uuid, client.Event, err)
@@ -81,7 +81,7 @@ func (hs *HeyoServer) ClientDisconnect(client *model.Client, subscriber *rpc.Sub
 	if client.MessageChan != nil {
 		close(client.MessageChan)
 	}
-	log.Printf("[INFO] '%s' disconnected from '%s'\n", client.Uuid, client.Event)
+	log.Printf("[INFO] '%s:%s' disconnected from '%s'\n", client.Name, client.Uuid, client.Event)
 	log.Printf("[INFO] '%s' now has %d subscribers", subscriber.Event, hs.clients.Len(subscriber.Event))
 }
 
