@@ -11,6 +11,16 @@ proto-go: # Re-generate the .pb.go files from their .proto parent
 proto-rust:
 	cd proto/rust && cargo build
 
+.PHONY: proto-ts
+proto-ts:
+	protoc \
+		--plugin=./node_modules/.bin/protoc-gen-ts_proto \
+		-I ./proto \
+		--ts_proto_out=./proto/ts \
+		--ts_proto_opt=outputServices=grpc-js,env=node,esModuleInterop=true \
+		./proto/heyo.proto
+
+
 .PHONY: proto
 proto: proto-rust proto-go
 

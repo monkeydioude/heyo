@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@grpc/grpc-js": "^1.14.1"
+  },
+  "devDependencies": {
+    "ts-proto": "^2.8.3",
+    "typescript": "^5.9.3"
+  }
+}
