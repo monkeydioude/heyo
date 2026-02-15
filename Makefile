@@ -38,3 +38,7 @@ CERT_PATH ?= ${DEFAULT_CERT_PATH}
 .PHONY: certs
 certs:
 	openssl req -newkey rsa:2048 -nodes -keyout ${CERT_PATH}/localhost.key -x509 -days 365 -out ${CERT_PATH}/localhost.crt -subj "/CN=localhost"
+
+.PHONY: docker-build
+docker-build:
+	docker buildx build --platform linux/amd64,linux/arm64 -t drannoc/heyo:latest --push .
